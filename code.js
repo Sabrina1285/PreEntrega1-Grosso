@@ -1,27 +1,102 @@
+class Alumno {
+    //constructor
+    constructor(nombre) {
+        this.nombre = nombre;
+    }
+
+    // setters
+    setNombre(nombre) {
+        this.nombre = nombre;
+    }
+    setCalificaciones(calificaciones) {
+        this.calificaciones = calificaciones;
+    }
+    setPromedioFinal(promedio) {
+        this.promedio = promedio;
+    }
+
+    // getter
+    getCantidadCalificaciones() {
+        return this.calificaciones.length;
+    }
+}
 
 // Inicio del programa
-pedirInformacionMostrarResultado();
+main();
 
 
+function main() {
+    const alumnos = [];
+    let opcion = 0;
+
+    while(opcion != 4) {
+        opcion = parseInt(prompt('1) Cargar Alumno \n2) Buscar Alumno \n3) Listar Alumnos \n4) Salir'));
+
+        if (opcion === 1) {         
+            let nombre = prompt('Nombre Alumno:');            
+            if (alumnos.includes(nombre)) {
+                alert('Ya existe un alumno con ese nombre');
+                continue;
+            }
+
+            let alumno = crearAlumno(nombre);
+            alumnos.push(alumno);
+        } else if(opcion === 2) {
+            let alumno = buscarAlumno(alumnos);
+            mostrarInformacion(alumno);
+        } else if (opcion === 3) {
+            listarAlumnos(alumnos);
+        }
+    }
+}
 
 // Metodo
-function pedirInformacionMostrarResultado() {
+function listarAlumnos(alumnos) {
+    alumnos.forEach(alumno => {
+        alert(alumno.nombre)
+    });
+}
 
-    let nombreAlumno = prompt('Nombre Alumno:');
-    let cantidadNotas = parseInt(prompt('Ingrese la cantidad de notas del Alumno:'));
-    let sumaTotalNotas = 0;
+// Funcion
+function crearAlumno(nombre) {
+    // Alumno Object
+    const alumnoObject = new Alumno(nombre);
+
+    let cantidadNotas = parseInt(prompt('Ingrese la cantidad de notas de ' + nombre + ':'));
+    let calificaciones = [];
 
     for (let i = 0; i < cantidadNotas; i++) {
         let numeroNota = i + 1;
-        let mensaje = 'Nota ' + numeroNota + ':';
+        let mensaje = 'Calificacion ' + numeroNota + ':';
         let notaMateria = parseInt(prompt(mensaje));
-        sumaTotalNotas += notaMateria;
+
+        // Agrega la nota al Array
+        calificaciones.push(notaMateria);
     }
 
-    let promedioAlumno = obtenerPromedio(cantidadNotas, sumaTotalNotas);
-    
-    mostrarPromedioEnPantalla(nombreAlumno, promedioAlumno);
+    // guardar las calificaciones dentro del objeto creado.
+    alumnoObject.setCalificaciones(calificaciones);
+
+    return alumnoObject;
+}
+
+
+// Metodo
+function mostrarInformacion(alumno) {
+    let promedioAlumno = obtenerPromedio(alumno.getCantidadCalificaciones(), alumno.calificaciones);
+
+    mostrarPromedioEnPantalla(alumno.nombre, promedioAlumno);
     mostrarAprobadoDesaprobadoEnPantalla(promedioAlumno);
+}
+
+// Funcion
+function buscarAlumno(alumnos) {
+    let nombre = prompt('Nombre del alumno que desea buscar:');
+    for (const alumno of alumnos) {
+        if(alumno.nombre === nombre){
+            return alumno;
+        }
+    }
 }
 
 // Metodo Imprimir
@@ -34,13 +109,18 @@ function mostrarAprobadoDesaprobadoEnPantalla(notaFinal) {
     if (estaAprobado(notaFinal)) {
         alert('Alumno Aprobado :)');
     } else {
-        alert('Alumno Desarobado :(');
+        alert('Alumno Desaprobado :(');
     }
 }
 
 // Funcion
-function obtenerPromedio(cantidadMaterias, sumaTotal) {
-    return sumaTotal / cantidadMaterias;
+function obtenerPromedio(cantidadMaterias, calificaciones) {
+    let totalNotas = 0;
+    for (let i = 0; i < calificaciones.length; i++) {
+        totalNotas += calificaciones[i];
+    }
+
+    return totalNotas / cantidadMaterias;
 }
 
 // Funcion

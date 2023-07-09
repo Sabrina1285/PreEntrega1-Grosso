@@ -21,9 +21,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="./index.html">Listar</a>
+                    <a class="nav-link" href="./index.html">Listar</a>
                     <a class="nav-link" href="./agregarAlumno.html">Agregar</a>
-                    <a class="nav-link" href="./buscarAlumno.html">Buscar</a>
+                    <a class="nav-link active" href="./buscarAlumno.html">Buscar</a>
                 </div>
             </div>
         </div>
@@ -33,23 +33,30 @@
         <div class="row justify-content-md-center">
             <div class="col col-lg-6">
                 <div id="main" class="pt-3">
-                    <!-- Start - Listar Alumnos -->
+
+                    <!-- Start - Buscar Alumno Form -->
                     <div class="text-center mb-5">
-                        <h1>Listado Alumnos</h1>
+                        <h1>Buscar Alumno</h1>
                     </div>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr id="listarAlumnosHead">
-                                <th scope="col">Nombre</th>
-                                <th scope="col">D.N.I</th>
-                                <th scope="col">Promedio Final</th>
-                                <th scope="col">Condición</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listadoAlumnos">
-                        </tbody>
-                    </table>
-                    <!-- End - Listar Alumnos -->
+                    <form id="buscarAlumnoForm">
+                        <div class="mb-3 row">
+                            <label for="inputDNI" class="col-sm-2 col-form-label">D.N.I</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="inputDNI">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <button type="button" onclick="buscarAlumno(this.form)"
+                                class="btn btn-primary">Buscar</button>
+                        </div>
+                    </form>
+                    <!-- End - Buscar Alumno Form -->
+
+                    <div id="alumnoEncontrado">
+
+                    </div>
+                    
+
 
                 </div>
             </div>

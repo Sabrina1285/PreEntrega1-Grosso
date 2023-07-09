@@ -1,129 +1,122 @@
 class Alumno {
     //constructor
-    constructor(nombre) {
+    constructor({ nombre, dni, promedioFinal }) {
         this.nombre = nombre;
+        this.dni = dni;
+        this.promedioFinal = promedioFinal;
     }
 
-    // setters
     setNombre(nombre) {
         this.nombre = nombre;
     }
-    setCalificaciones(calificaciones) {
-        this.calificaciones = calificaciones;
+    setDNI(dni) {
+        this.dni = dni;
     }
     setPromedioFinal(promedio) {
         this.promedio = promedio;
     }
 
-    // getter
-    getCantidadCalificaciones() {
-        return this.calificaciones.length;
+    estaAprobado() {
+        return this.promedioFinal >= 7;
     }
 }
 
-// Inicio del programa
-main();
 
 
-function main() {
-    const alumnos = [];
-    let opcion = 0;
 
-    while(opcion != 4) {
-        opcion = parseInt(prompt('1) Cargar Alumno \n2) Buscar Alumno \n3) Listar Alumnos \n4) Salir'));
+window.onload = (event) => {
+    listarAlumnos();
+};
 
-        if (opcion === 1) {         
-            let nombre = prompt('Nombre Alumno:');            
-            if (alumnos.includes(nombre)) {
-                alert('Ya existe un alumno con ese nombre');
-                continue;
-            }
 
-            let alumno = crearAlumno(nombre);
-            alumnos.push(alumno);
-        } else if(opcion === 2) {
-            let alumno = buscarAlumno(alumnos);
-            mostrarInformacion(alumno);
-        } else if (opcion === 3) {
-            listarAlumnos(alumnos);
+function listarAlumnos() {
+    const alumnos = getAlumnosStorage();
+    const tableBodyElemento = document.getElementById('listadoAlumnos');
+    if (tableBodyElemento) {
+        alumnos.forEach(alumno => {
+            alumno = new Alumno(alumno);
+            tableBodyElemento.innerHTML = tableBodyElemento.outerHTML
+                + `<td>${alumno.nombre}</td>
+                    <td>${alumno.dni}</td>
+                    <td>${alumno.promedioFinal}</td>
+                    ${alumno.estaAprobado()
+                        ? '<td class="text-success">Aprobado'
+                        : '<td class="text-danger">Desaprobado'}</td>
+                `;
+        });
+    }
+}
+
+function buscarAlumno(event) {
+    const inputDNIvalue = event.inputDNI.value;
+    let alumnoEncontradoDiv = document.getElementById('alumnoEncontrado');
+
+    const alumnosStorage = getAlumnosStorage();
+    for (let alumno of alumnosStorage) {
+        alumno = new Alumno(alumno);
+        if (alumno.dni === inputDNIvalue) {
+            alumnoEncontradoDiv.innerHTML = 
+            `
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">${alumno.nombre}</h5>
+                        <p class="card-text"><b>D.N.I:</b> ${alumno.dni}</p>
+                        <p class="card-text"></p>
+                        ${alumno.estaAprobado()
+                            ? '<p class="text-success">Aprobado'
+                            : '<p class="text-danger">Desaprobado'}</p>
+                    </div>
+                </div>
+            `
+            return ;
         }
     }
-}
 
-// Metodo
-function listarAlumnos(alumnos) {
-    alumnos.forEach(alumno => {
-        alert(alumno.nombre)
-    });
-}
-
-// Funcion
-function crearAlumno(nombre) {
-    // Alumno Object
-    const alumnoObject = new Alumno(nombre);
-
-    let cantidadNotas = parseInt(prompt('Ingrese la cantidad de notas de ' + nombre + ':'));
-    let calificaciones = [];
-
-    for (let i = 0; i < cantidadNotas; i++) {
-        let numeroNota = i + 1;
-        let mensaje = 'Calificacion ' + numeroNota + ':';
-        let notaMateria = parseInt(prompt(mensaje));
-
-        // Agrega la nota al Array
-        calificaciones.push(notaMateria);
-    }
-
-    // guardar las calificaciones dentro del objeto creado.
-    alumnoObject.setCalificaciones(calificaciones);
-
-    return alumnoObject;
+    alumnoEncontradoDiv.innerHTML = '';
+    alert('Alumno no encontrado');
 }
 
 
-// Metodo
-function mostrarInformacion(alumno) {
-    let promedioAlumno = obtenerPromedio(alumno.getCantidadCalificaciones(), alumno.calificaciones);
+function crearAlumno() {
+    const form = document.getElementById('crearAlumnoForm');
 
-    mostrarPromedioEnPantalla(alumno.nombre, promedioAlumno);
-    mostrarAprobadoDesaprobadoEnPantalla(promedioAlumno);
-}
+    const inputNombre = form.inputNombre.value;
+    const inputDNI = form.inputDNI.value;
+    const inputPromedioFinal = form.inputPromedioFinal.value;
 
-// Funcion
-function buscarAlumno(alumnos) {
-    let nombre = prompt('Nombre del alumno que desea buscar:');
-    for (const alumno of alumnos) {
-        if(alumno.nombre === nombre){
-            return alumno;
-        }
-    }
-}
+    let esValido = inputNombre != "" && inputDNI != "" && inputPromedioFinal != "";
 
-// Metodo Imprimir
-function mostrarPromedioEnPantalla(nombreAlumno, promedioFinal) {
-    alert('El promedio del ' + nombreAlumno + ' es: ' + promedioFinal);
-}
+    if (esValido) {
+        // Alumno Object
+        const alumnoObject = new Alumno({
+            nombre: inputNombre,
+            dni: inputDNI,
+            promedioFinal: inputPromedioFinal
+        });
 
-// Metodo Imprimir
-function mostrarAprobadoDesaprobadoEnPantalla(notaFinal) {
-    if (estaAprobado(notaFinal)) {
-        alert('Alumno Aprobado :)');
+        this.agregarAlumnoStorage(alumnoObject);
+        form.reset();
+        alert('Alumno creado correctamente.');
     } else {
-        alert('Alumno Desaprobado :(');
+        alert('Todos los campos son obligatorios.');
     }
 }
 
-// Funcion
-function obtenerPromedio(cantidadMaterias, calificaciones) {
-    let totalNotas = 0;
-    for (let i = 0; i < calificaciones.length; i++) {
-        totalNotas += calificaciones[i];
-    }
+function getAlumnosStorage() {
+    const alumnosArray = JSON.parse(localStorage.getItem('alumnos'));
 
-    return totalNotas / cantidadMaterias;
+    if (alumnosArray === null) localStorage.setItem('alumnos', '[]');
+
+    return JSON.parse(localStorage.getItem('alumnos'));
 }
 
-// Funcion
-function estaAprobado(nota) {
-    return nota >= 7;
+function agregarAlumnoStorage(alumnoObj) {
+    const alumnosArray = getAlumnosStorage();
+    alumnosArray.push(alumnoObj);
+
+    localStorage.setItem('alumnos', JSON.stringify(alumnosArray));
+}
+
+function clearStorage() {
+    localStorage.clear();
 }
